@@ -19,6 +19,10 @@
 - If coverage is 100% but mutant score has dropped, fix it before merging
 - If 2 classes are merged then tests should be merged too
 
+# Architecture
+
+- The current list of architectural components (bounded contexts, read models, processes) is defined in `config/architecture.yml`
+
 # Process managers
 
 - Process managers are tested via asserting that specific commands are issued, when certain events input is given
