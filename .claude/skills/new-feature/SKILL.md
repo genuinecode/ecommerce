@@ -68,12 +68,26 @@ Use the existing skills:
 - `/read-model` — for read model event handlers and configuration
 - `/controller` — for controller actions, routes, views
 
-### 5. Verify
+### 5. Verify each affected read model individually
+
+For **every** read model that was touched (not just the primary one):
+
+1. Add or update **unit tests** in the read model's test file — the integration test is not enough, mutant requires unit-level coverage
+2. Tests must use **multiple records** to kill `where`-clause removal mutations (e.g., two customers so renaming one doesn't affect the other)
+3. If a lookup table is updated alongside denormalized records, test that subsequent operations (e.g., assign after rename) use the updated lookup value
+4. Run mutant for each affected namespace:
+   ```bash
+   RAILS_ENV=test bundle exec mutant run "OrderHeader::RenameCustomer*"
+   RAILS_ENV=test bundle exec mutant run "Deals::EventHandler*"
+   ```
+5. 100% mutation score required before moving on
+
+### 6. Final verification
 
 1. Integration test passes
 2. `rails test test/integration/` — all integration tests pass
 3. `make test` — all tests green
-4. Run mutant for affected namespaces
+4. Mutant passes for all affected namespaces
 
 ## Checklist
 
@@ -82,3 +96,5 @@ Use the existing skills:
 - [ ] Listed every read model that needs a new handler
 - [ ] Integration test covers all affected pages
 - [ ] Denormalized copies of data are updated (not just the primary table)
+- [ ] **Unit tests added for every new/modified read model handler**
+- [ ] **Mutant run for each affected read model namespace at 100%**
